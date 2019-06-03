@@ -1,5 +1,5 @@
-import util
-import cred
+import bin.util as util
+import bin.cred as cred
 import os
 
 def help(subcommands):

@@ -1,6 +1,6 @@
 #!/bin/python3
-import util
-import ui
+import bin.util as util
+import bin.ui as ui
 import sys
 
 def main():

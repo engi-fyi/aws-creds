@@ -1,5 +1,5 @@
 import json
-import util
+import bin.util as util
 import os
 
 # aws-creds add --profile <profile> --access-key <access_key> --secret-key <secret_key> --region

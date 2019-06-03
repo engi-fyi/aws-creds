@@ -3,7 +3,7 @@ import json
 import datetime
 
 def init_config():
-    home_dir = os.path.expanduser("~//.aws")
+    home_dir = os.path.expanduser("~/.aws")
     accounts_file_name = get_accounts_file_name()
     login_history_file_name = get_login_history_file_name()
 

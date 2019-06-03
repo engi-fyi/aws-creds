@@ -36,7 +36,7 @@ def get_config_file_name():
 
 def add_login_history(action_type, profile_name):
     login_history_file = open(get_login_history_file_name(), "a")
-    login_history_file.write(action_type + "," + profile_name + "," + str(datetime.datetime.now()))
+    login_history_file.write(action_type + "," + profile_name + "," + str(datetime.datetime.now()) + "\n")
     login_history_file.close()
 
 def get_usage_string(arguments, subcommand=None):

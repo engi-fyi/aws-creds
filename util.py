@@ -12,7 +12,7 @@ def init_config():
 
     if not os.path.exists(accounts_file_name):
         accounts_file = open(accounts_file_name, "w")
-        accounts_file.write("{ }")
+        accounts_file.write("[ ]")
         accounts_file.close()
     
     if not os.path.exists(login_history_file_name):

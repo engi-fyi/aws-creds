@@ -73,7 +73,7 @@ def update():
     print("Not Yet Implemented!")
 
 def version():
-    print("Version: 0.1.0")
+    print("Version: 0.1.1")
 
 def status():
     if os.path.exists(util.get_current_profile_file_name()):

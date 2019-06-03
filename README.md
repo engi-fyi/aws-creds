@@ -27,3 +27,14 @@ The following commands are available within the AWS Credential Picker.
 6. ```version```: Output version details.
 7. ```status```: Print details about the current session (account/user).
 8. ```help```: Print out **Usage** details.
+
+## How it Works
+The AWS Credential Picker is quite simple in it's design. Instead of storing details in the credentials file - which can prove difficult to use with lots of profiles - we store them in a custom JSON file. When you ```login```, you're actually doing is creating the ```credentials``` and the ```config``` file in ```~/.aws```. When you ```logout```, these files are being deleted.
+
+The reason this was created is that some AWS Utilities and 3rd Party Tools REALLY do not like it if you have multiple profiles and do not treat environment variables correctly. By always having a single credential set, utilities will ALWAYS work.
+
+This script also provides an update on how old your Access Key is and advises you when to rotate them.
+
+## Dependencies
+
+- [boto3](https://pypi.org/project/boto3/)

@@ -24,5 +24,9 @@ setuptools.setup(
         'console_scripts': [
             'aws-creds=bin.run:main'
         ]
-    }
+    },
+    install_requires = [
+        "json",
+        "boto3"
+    ]
 )

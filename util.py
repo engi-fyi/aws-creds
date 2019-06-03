@@ -3,7 +3,7 @@ import json
 import datetime
 
 def init_config():
-    home_dir = os.path.expanduser("~\\.aws")
+    home_dir = os.path.expanduser("~//.aws")
     accounts_file_name = get_accounts_file_name()
     login_history_file_name = get_login_history_file_name()
 
@@ -19,20 +19,20 @@ def init_config():
         add_login_history("INIT","NO_ACCOUNT")
 
 def get_accounts_file_name():
-    home_dir = os.path.expanduser("~\\.aws")
-    return home_dir + "\\accounts.json"
+    home_dir = os.path.expanduser("~/.aws")
+    return home_dir + "/accounts.json"
 
 def get_login_history_file_name():
-    home_dir = os.path.expanduser("~\\.aws")
-    return home_dir + "\\login_history.log"
+    home_dir = os.path.expanduser("~/.aws")
+    return home_dir + "/login_history.log"
 
 def get_credential_file_name():
-    home_dir = os.path.expanduser("~\\.aws")
-    return home_dir + "\\credentials"
+    home_dir = os.path.expanduser("~/.aws")
+    return home_dir + "/credentials"
 
 def get_config_file_name():
-    home_dir = os.path.expanduser("~\\.aws")
-    return home_dir + "\\config"
+    home_dir = os.path.expanduser("~/.aws")
+    return home_dir + "/config"
 
 def add_login_history(action_type, profile_name):
     login_history_file = open(get_login_history_file_name(), "w")

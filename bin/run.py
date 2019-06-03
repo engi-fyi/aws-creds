@@ -5,7 +5,7 @@ import sys
 
 def main():
     util.init_config()
-    subcommands = ["add", "rm", "ls", "login", "logout", "help"]
+    subcommands = ["add", "rm", "ls", "login", "logout", "version", "status", "help"]
 
     if len(sys.argv) >= 2:
         command = sys.argv[1]

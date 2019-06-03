@@ -1,6 +1,7 @@
 import json
 import bin.util as util
 import os
+import boto3
 
 # aws-creds add --profile <profile> --access-key <access_key> --secret-key <secret_key> --region
 # aws-creds rm --profile <profile>
@@ -74,6 +75,10 @@ def login(cred_config):
     credential_file.write(credential_file_contents)
     credential_file.close()
 
+    current_profile_file = open(util.get_current_profile_file_name(), "w+")
+    current_profile_file.write(cred_config["profile"].upper())
+    current_profile_file.close()
+
     options_file = open(util.get_config_file_name(), "w+")
     options_file.write(options_file_contents)
     options_file.close()
@@ -82,9 +87,18 @@ def login(cred_config):
 
     return True
 
-def logout(cred_config):
-    print("NYI: Not Yet Implemented.")
-    return False
+def logout():
+    if os.path.exists(util.get_current_profile_file_name()):
+        util.add_login_history("LOGOUT", util.get_current_profile())
+        os.remove(util.get_current_profile_file_name())
+
+    if os.path.exists(util.get_credential_file_name()):
+        os.remove(util.get_credential_file_name())
+
+    if os.path.exists(util.get_config_file_name()):
+        os.remove(util.get_config_file_name())
+
+    return True
 
 def get_all():
     accounts_file = open(util.get_accounts_file_name(), "r")
@@ -92,3 +106,27 @@ def get_all():
     accounts_file.close()
     return accounts
 
+def status():
+    sts = boto3.client("sts")
+    iam = boto3.client("iam")
+    session = boto3.Session()
+    status_details = {
+        "account": None,
+        "username": None,
+        "aliases": None,
+        "access_key": None
+    }
+
+    id = sts.get_caller_identity()
+    status_details["account"] = id["Account"]
+    status_details["username"] = id["Arn"].split("/")[1]
+
+    # List account aliases through the pagination interface
+    paginator = iam.get_paginator("list_account_aliases")
+    for response in paginator.paginate():
+        status_details["aliases"] = response["AccountAliases"][0]
+
+    credentials = session.get_credentials()
+    status_details["access_key"] = credentials.access_key
+
+    return status_details

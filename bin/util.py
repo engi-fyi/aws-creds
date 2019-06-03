@@ -1,6 +1,7 @@
 import os
 import json
 import datetime
+import boto3
 
 def init_config():
     home_dir = os.path.expanduser("~/.aws")
@@ -34,6 +35,10 @@ def get_config_file_name():
     home_dir = os.path.expanduser("~/.aws")
     return home_dir + "/config"
 
+def get_current_profile_file_name():
+    home_dir = os.path.expanduser("~/.aws")
+    return home_dir + "/profile.cred"
+
 def add_login_history(action_type, profile_name):
     login_history_file = open(get_login_history_file_name(), "a")
     login_history_file.write(action_type + "," + profile_name + "," + str(datetime.datetime.now()) + "\n")
@@ -63,3 +68,29 @@ def get_usage_string(arguments, subcommand=None):
         usage_string = usage_string[0:(len(usage_string) - 1)] + "]"
 
     return usage_string
+
+def get_current_profile():
+    current_profile_file = open(get_current_profile_file_name(), "r")
+    current_profile = current_profile_file.read()
+    current_profile_file.close()
+    return current_profile
+
+def get_access_key_age():
+    session = boto3.Session()
+    credentials = session.get_credentials()
+    access_key_id = credentials.access_key
+    iam = boto3.client('iam')
+    access_keys = iam.list_access_keys()
+    days_old = 0
+
+    for access_key_metadata in access_keys["AccessKeyMetadata"]:
+        if access_key_metadata["AccessKeyId"] == access_key_id:
+            create_date = access_key_metadata["CreateDate"].replace(tzinfo=None)
+            current_time = datetime.datetime.utcnow().replace(tzinfo=None)
+            time_string = str(current_time - create_date).split(",")[0]
+            try:
+                days_old = int(time_string.split(" ")[0])
+            except:
+                days_old = 0
+
+    return days_old

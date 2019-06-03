@@ -46,11 +46,43 @@ def login():
 
         if account < len(accounts):
             cred.login(accounts[account])
+            days_old = util.get_access_key_age()
+
+            if days_old == 1:
+                time_string = "1 day"
+            else:
+                time_string = str(days_old) + " days"
+
+            if days_old < 50:
+                print('\033[92m' + "Your current access key is " + time_string + " old." + '\033[0m')
+            elif days_old < 60:
+                print('\033[93m' + "Your current access key is " + time_string + " old." + '\033[0m')
+            else:
+                print('\033[91m' + "Your current access key is " + time_string + " old." + '\033[0m')
+                print('\033[91m' + "Please rotate it immediately (reason: older than 60 days)." '\033[0m')
         else:
             print("Sorry, you haven't picked an option between 1 and " + str(len(accounts)) + ".")
     except:
         print("Sorry, you haven't entered a number.")
 
-
 def logout():
+    cred.logout()
+    print("Logged out successfully.")
+
+def update():
     print("Not Yet Implemented!")
+
+def version():
+    print("Version: 0.1.0")
+
+def status():
+    if os.path.exists(util.get_current_profile_file_name()):
+        details = cred.status()
+
+        print("Current Profile: " + util.get_current_profile())
+        print("Account Number:  " + details["account"])
+        print("Account Aliases: " + str(details["aliases"]))
+        print("Username:        " + details["username"])
+        print("Access Key:      " + details["access_key"])
+    else:
+        print("Not logged in.")

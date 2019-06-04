@@ -5,7 +5,7 @@ Makes it easier to use multiple AWS accounts when you don't have SSO available. 
 
 This utility is available in PyPi and can be installed by running:
 ```
-pip install aws-creds
+python3 -m pip install aws-creds
 ```
 
 ## Usage

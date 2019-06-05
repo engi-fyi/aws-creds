@@ -39,6 +39,10 @@ def get_current_profile_file_name():
     home_dir = os.path.expanduser("~/.aws")
     return home_dir + "/profile.cred"
 
+def get_error_log_file_name():
+    home_dir = os.path.expanduser("~/.aws")
+    return home_dir + "/error.log"
+
 def add_login_history(action_type, profile_name):
     login_history_file = open(get_login_history_file_name(), "a")
     login_history_file.write(action_type + "," + profile_name + "," + str(datetime.datetime.now()) + "\n")
@@ -94,3 +98,26 @@ def get_access_key_age():
                 days_old = 0
 
     return days_old
+
+def log_error(error_text, function_name):
+    if os.path.exists(get_error_log_file_name()):
+        error_file = open(get_error_log_file_name(), "r")
+        existing_errors = json.loads(error_file.read())
+        error_file.close()
+    else:
+        existing_errors = []
+    
+    error = {
+        "datetime": str(datetime.datetime.utcnow().replace(tzinfo=None)),
+        "error": error_text,
+        "occured_in": function_name
+    }
+
+    existing_errors.insert(0, error)
+    
+    if len(existing_errors) > 100:
+        existing_errors.pop()
+
+    error_file = open(get_error_log_file_name(), "w+")
+    error_file.write(json.dumps(existing_errors))
+    error_file.close()

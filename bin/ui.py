@@ -62,7 +62,8 @@ def login():
                 print('\033[91m' + "Please rotate it immediately (reason: older than 60 days)." '\033[0m')
         else:
             print("Sorry, you haven't picked an option between 1 and " + str(len(accounts)) + ".")
-    except:
+    except Exception as err:
+        util.log_error(str(err), "ui.login()")
         print("Sorry, you haven't entered a number.")
 
 def logout():
@@ -73,7 +74,7 @@ def update():
     print("Not Yet Implemented!")
 
 def version():
-    print("Version: 0.1.3")
+    print("Version: 0.1.4")
 
 def status():
     if os.path.exists(util.get_current_profile_file_name()):

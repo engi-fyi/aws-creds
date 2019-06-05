@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="aws-creds",
-    version="0.1.3",
+    version="0.1.4",
     author="Adam Hammond",
     author_email="adam@hammo.io",
     description="Switch between AWS Credential profiles.",

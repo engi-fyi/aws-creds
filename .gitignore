@@ -105,3 +105,6 @@ venv.bak/
 
 # macOS
 .DS_Store
+
+# my build process
+.installed_files

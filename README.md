@@ -19,7 +19,9 @@ Usage: aws-creds [OPTIONS] COMMAND [ARGS]...
   them with an simple set of commands.
 
 Options:
-  --help  Show this message and exit.
+  --version  Show the version and exit.
+  --help     Show this message and exit.
+
 
 Commands:
   add      Adds a new account profile to '~/.aws/accounts.json'.
@@ -29,7 +31,6 @@ Commands:
   rm       NYI: Not Yet Implemented.
   status   Prints out information about the credential that is currently in...
   update   NYI: Not Yet Implemented.
-  version  Prints out the current version of aws-creds.
 ```
 
 ## Commands

@@ -153,6 +153,11 @@ def status():
         click.echo("Not logged in.")
         click.echo(" ")
 
+@click.command()    
+def update():
+    """NYI: Not Yet Implemented."""
+    click.echo("Not yet implemented, try again later.")
+
 def get_account_details():
     sts = boto3.client("sts")
     iam = boto3.client("iam")

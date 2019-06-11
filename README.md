@@ -41,7 +41,6 @@ The following commands are available within the AWS Credential Picker.
 3. ```ls```: List all the saved credentials.
 4. ```login```: Login using a credential.
 5. ```logout```: Remove all of the files used by the aws-cli in ~/.aws.
-6. ```version```: Output version details.
 7. ```status```: Print details about the current session (account/user).
 
 ## Options
@@ -49,6 +48,7 @@ The following commands are available within the AWS Credential Picker.
 The following options are available within the AWS Credential Picker.
 
 1. ```--help```: Show the help screen.
+2. ```--version```: Print version details.
 
 ## How it Works
 The AWS Credential Picker is quite simple in it's design. Instead of storing details in the credentials file - which can prove difficult to use with lots of profiles - we store them in a custom JSON file. When you ```login```, you're actually doing is creating the ```credentials``` and the ```config``` file in ```~/.aws```. When you ```logout```, these files are being deleted.

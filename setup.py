@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="aws-creds",
-    version="0.1.5",
+    version="0.2.0",
     author="Adam Hammond",
     author_email="adam@hammo.io",
     description="Switch between AWS Credential profiles.",
@@ -22,10 +22,11 @@ setuptools.setup(
     ],
     entry_points = {
         'console_scripts': [
-            'aws-creds=bin.run:main'
+            'aws-creds=bin.run:cli'
         ]
     },
     install_requires = [
-        "boto3"
+        "boto3",
+        "click"
     ]
 )

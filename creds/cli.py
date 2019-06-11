@@ -25,7 +25,7 @@ from creds import cred
               help="Default Output Format (valid options: text, json, table)",
               prompt="Output Type")
 def add(profile_name, description, access_key, secret_key, region, output):
-    """Adds a new account profile to '~/.aws/accounts.json'."""
+    """Adds a new credential profile."""
     if profile_name and access_key and secret_key and region and output:
         my_credential = cred.Credential(profile_name, description, access_key, secret_key, region, output)
         my_credential.save()
@@ -53,7 +53,7 @@ def login():
     this by doing the following:
 
     \b
-    1. Retrieves the credential information from '~/.aws/accounts.json'.
+    1. Retrieves the credential information.
     2. Saves the Access Key an Secret Key under the [default] profile in the
        AWS Credential file under '~/.aws/credentials'.
     3. Saves the Region and Output settings under the [default] profile in
@@ -64,7 +64,6 @@ def login():
        to be rotated.
     
     """
-    click.echo(" ")
     my_credentials = cred.Credential.get_all()
     echo_credentials(my_credentials)
     selection = click.prompt("Which profile would you like to login to", type=int, prompt_suffix="? ") - 1
@@ -113,6 +112,8 @@ def rm():
             click.echo("Profile deleted successfully.")
         else:
             click.echo("Deletion not confirmed, not continuing.")
+        
+        click.echo(" ")
     except click.Abort as interrupt:
         click.echo(" ")
         click.echo(" ")
@@ -136,9 +137,9 @@ def status():
     """
 
     my_credential = cred.Credential.get_current()
-    access_key_age = str(get_access_key_age()) + " day(s)."
 
     if my_credential:
+        access_key_age = str(get_access_key_age()) + " day(s)."
         details = get_account_details()
         click.echo(" ")
         click.echo("Current Profile: " + my_credential.name)

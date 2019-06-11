@@ -2,6 +2,7 @@ import bin.util as util
 import bin.cred as cred
 import os
 import click
+import pkg_resources
 
 @click.command()
 @click.option("--profile-name", 
@@ -35,22 +36,25 @@ def add(profile_name, description, access_key, secret_key, region, output):
             "output": output
         }
 
-        return cred.add(cred_config)
+        if cred.add(cred_config):
+            click.echo("New profile added successfully.")
+        else:
+            click.echo("Failed to add new profile, please try again.")
     else:
-        print("Sorry, you didn't enter a value for all the options!")
+        click.echo("Sorry, you didn't enter a value for all the options!")
 
 @click.command()
 def rm():
     """NYI: Not Yet Implemented."""
-    print("Not Yet Implemented!")
+    click.echo("Not Yet Implemented!")
 
 @click.command()
 def ls():
     """Lists all of the profiles currently saved in '~/.aws/accounts.json'."""
-    print(" ")
-    print("Installed AWS Profiles")
-    print(" ")
-    print(cred.list_all())
+    click.echo(" ")
+    click.echo("Installed AWS Profiles")
+    click.echo(" ")
+    click.echo(cred.list_all())
 
 @click.command()
 def login():
@@ -70,12 +74,13 @@ def login():
        to be rotated.
     
     """
-    ls()
-    print(" ")
+    click.echo(" ")
+    click.echo(cred.list_all())
+    click.echo(" ")
     accounts = cred.get_all()
 
     try:
-        account = int(input("Which account would you like to login to? ")) - 1
+        account = click.prompt("Which account would you like to login to", type=int, prompt_suffix="? ") - 1
 
         if account < len(accounts):
             cred.login(accounts[account])
@@ -88,21 +93,23 @@ def login():
                     time_string = str(days_old) + " days"
 
                 if days_old < 50:
-                    print('\033[92m' + "Your current access key is " + time_string + " old." + '\033[0m')
+                    click.echo('\033[92m' + "Your current access key is " + time_string + " old." + '\033[0m')
                 elif days_old < 60:
-                    print('\033[93m' + "Your current access key is " + time_string + " old." + '\033[0m')
+                    click.echo('\033[93m' + "Your current access key is " + time_string + " old." + '\033[0m')
                 else:
-                    print('\033[91m' + "Your current access key is " + time_string + " old." + '\033[0m')
-                    print('\033[91m' + "Please rotate it immediately (reason: older than 60 days)." '\033[0m')
+                    click.echo('\033[91m' + "Your current access key is " + time_string + " old." + '\033[0m')
+                    click.echo('\033[91m' + "Please rotate it immediately (reason: older than 60 days)." '\033[0m')
             except Exception as err:
                 util.log_error(str(err), "ui.login()")
-                print("Error connecting to your account.")
-                print("Please clear any AWS environment variables and try again.")
+                click.echo("Error connecting to your account.")
+                click.echo("Please clear any AWS environment variables and try again.")
         else:
-            print("Sorry, you haven't picked an option between 1 and " + str(len(accounts)) + ".")
+            click.echo("Sorry, you haven't picked an option between 1 and " + str(len(accounts)) + ".")
+    except click.Abort as interrupt:
+        click.echo("Exiting, you haven't been logged in.")
     except Exception as err:
         util.log_error(str(err), "ui.login()")
-        print("Sorry, you haven't entered a number.")
+        click.echo("Sorry, you haven't entered a number.")
 
 @click.command()
 def logout():
@@ -122,17 +129,17 @@ def logout():
     
     """
     cred.logout()
-    print("Logged out successfully.")
+    click.echo("Logged out successfully.")
 
 @click.command()
 def update():
     """NYI: Not Yet Implemented."""
-    print("Not Yet Implemented!")
+    click.echo("Not Yet Implemented!")
 
 @click.command()
 def version():
     """Prints out the current version of aws-creds."""
-    print("Version: 0.2.0")
+    
 
 @click.command()
 def status():
@@ -152,10 +159,10 @@ def status():
     if os.path.exists(util.get_current_profile_file_name()):
         details = cred.status()
 
-        print("Current Profile: " + util.get_current_profile())
-        print("Account Number:  " + details["account"])
-        print("Account Aliases: " + str(details["aliases"]))
-        print("Username:        " + details["username"])
-        print("Access Key:      " + details["access_key"])
+        click.echo("Current Profile: " + util.get_current_profile())
+        click.echo("Account Number:  " + details["account"])
+        click.echo("Account Aliases: " + str(details["aliases"]))
+        click.echo("Username:        " + details["username"])
+        click.echo("Access Key:      " + details["access_key"])
     else:
-        print("Not logged in.")
+        click.echo("Not logged in.")

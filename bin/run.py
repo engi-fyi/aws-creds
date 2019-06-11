@@ -3,8 +3,10 @@ import bin.util as util
 import bin.ui as ui
 import sys
 import click
+import pkg_resources
 
 @click.group()
+@click.version_option()
 def cli():
     """
         aws-creds makes it easier to use multiple AWS accounts when you don't have SSO available. 
@@ -28,7 +30,7 @@ def cli():
     #         ui.help(subcommands)
     # else:
     #     ui.help(subcommands)
-# rm,ls,login,logout,status,update,version
+
 cli.add_command(ui.add)
 cli.add_command(ui.rm)
 cli.add_command(ui.ls)
@@ -36,4 +38,3 @@ cli.add_command(ui.login)
 cli.add_command(ui.logout)
 cli.add_command(ui.status)
 cli.add_command(ui.update)
-cli.add_command(ui.version)

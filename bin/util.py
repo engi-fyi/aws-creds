@@ -3,6 +3,15 @@ import json
 import datetime
 import boto3
 
+AWS_DIR = "~/.aws/"
+ACCOUNTS_FILE_NAME = "~/.aws/accounts.json"
+LOGIN_HISTORY_FILE_NAME = "~/.aws/login_history.log"
+CREDENTIAL_FILE_NAME = "~/.aws/credentials"
+CONFIG_FILE_NAME = "~/.aws/config"
+CURRENT_PROFILE_FILE_NAME = "~/.aws/"
+ERROR_LOG_FILE_NAME = "~/.aws/error.log"
+DEFAULTS_FILE_NAME = "~/.aws/defaults.json"
+
 def init_config():
     home_dir = os.path.expanduser("~/.aws")
     accounts_file_name = get_accounts_file_name()
@@ -19,59 +28,34 @@ def init_config():
     if not os.path.exists(login_history_file_name):
         add_login_history("INIT","NO_ACCOUNT")
 
+def get_aws_directory():
+    return os.path.expanduser(AWS_DIR)
+
 def get_accounts_file_name():
-    home_dir = os.path.expanduser("~/.aws")
-    return home_dir + "/accounts.json"
+    return os.path.expanduser(ACCOUNTS_FILE_NAME)
 
 def get_login_history_file_name():
-    home_dir = os.path.expanduser("~/.aws")
-    return home_dir + "/login_history.log"
+    return os.path.expanduser(LOGIN_HISTORY_FILE_NAME)
 
 def get_credential_file_name():
-    home_dir = os.path.expanduser("~/.aws")
-    return home_dir + "/credentials"
+    return os.path.expanduser(CREDENTIAL_FILE_NAME)
 
 def get_config_file_name():
-    home_dir = os.path.expanduser("~/.aws")
-    return home_dir + "/config"
+    return os.path.expanduser(CONFIG_FILE_NAME)
 
 def get_current_profile_file_name():
-    home_dir = os.path.expanduser("~/.aws")
-    return home_dir + "/profile.cred"
+    return os.path.expanduser(CURRENT_PROFILE_FILE_NAME)
 
 def get_error_log_file_name():
-    home_dir = os.path.expanduser("~/.aws")
-    return home_dir + "/error.log"
+    return os.path.expanduser(ERROR_LOG_FILE_NAME)
+
+def get_defaults_file_name():
+    return os.path.expanduser(DEFAULTS_FILE_NAME)
 
 def add_login_history(action_type, profile_name):
     login_history_file = open(get_login_history_file_name(), "a")
     login_history_file.write(action_type + "," + profile_name + "," + str(datetime.datetime.now()) + "\n")
     login_history_file.close()
-
-def get_usage_string(arguments, subcommand=None):
-    usage_string = ""
-
-    if subcommand:
-        command_string = "aws-creds " + subcommand
-
-        arguments_string = command_string
-        expanded_arguments_string = command_string
-
-        for argument in arguments:
-            arguments_string += " <" + argument + ">"
-            expanded_arguments_string += " --" + argument + " " + "<" + argument + ">"
-        
-        usage_string += "Usage: " + arguments_string + os.linesep
-        usage_string += "       " + expanded_arguments_string
-    else:
-        usage_string = "Usage: aws-creds ["
-
-        for argument in arguments:
-            usage_string += argument + "|"
-    
-        usage_string = usage_string[0:(len(usage_string) - 1)] + "]"
-
-    return usage_string
 
 def get_current_profile():
     current_profile_file = open(get_current_profile_file_name(), "r")

@@ -166,3 +166,22 @@ def status():
         click.echo("Access Key:      " + details["access_key"])
     else:
         click.echo("Not logged in.")
+
+@click.group()
+def defaults():
+    """
+        get/set default options for every profile.
+    """
+
+@click.command(name="get")
+def get_defaults():
+    """NYI: Not Yet Implemented."""
+    click.echo("Not Yet Implemented!")
+
+@click.command(name="set")
+def set_defaults():
+    """NYI: Not Yet Implemented."""
+    click.echo("Not Yet Implemented!")
+
+defaults.add_command(get_defaults)
+defaults.add_command(set_defaults)

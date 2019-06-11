@@ -24,6 +24,18 @@ class Credential():
         else:
             self.modifed_date = modified_date
 
+    def __lt__(self, other):
+        if self.name < other.name:
+            return True
+        else:
+            return False
+
+    def __gt__(self, other):
+        if self.name > other.name:
+            return True
+        else:
+            return False
+
     def to_json(self):
         credential_dictionary = {
             "Id": self.id,
@@ -130,6 +142,8 @@ class Credential():
             with open(Credential.OLD_ACCOUNTS_FILE_NAME, "r") as fh:
                 old_accounts = json.loads(fh.read())
 
+            os.remove(Credential.OLD_ACCOUNTS_FILE_NAME)
+
             for old_account in old_accounts:
                 new_profile = Credential(
                     old_account["profile"],
@@ -149,6 +163,7 @@ class Credential():
         for profile in profiles:
             all_credentials.append(Credential.from_json(profile))
 
+        all_credentials.sort()
         return all_credentials
     
     @staticmethod

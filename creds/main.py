@@ -1,8 +1,7 @@
 #!/bin/python3
-import ui.creds_ui as creds_ui
-import creds.credential as cred
 import sys
 import click
+from creds import cli, cred
 
 @click.group()
 @click.version_option()
@@ -11,13 +10,13 @@ def main():
         aws-creds makes it easier to use multiple AWS accounts when you don't have SSO available. 
         You can easily save multiple profiles, and then log into them with an simple set of commands.
     """
-    #util.init_config()
+    pass
 
-main.add_command(creds_ui.add)
-main.add_command(creds_ui.ls)
-main.add_command(creds_ui.rm)
-main.add_command(creds_ui.login)
-main.add_command(creds_ui.logout)
-main.add_command(creds_ui.status)
-main.add_command(creds_ui.update)
-#cred.Credential.migrate()
+main.add_command(cli.add)
+main.add_command(cli.ls)
+main.add_command(cli.rm)
+main.add_command(cli.login)
+main.add_command(cli.logout)
+main.add_command(cli.status)
+main.add_command(cli.update)
+cred.Credential.migrate()

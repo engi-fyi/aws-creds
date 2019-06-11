@@ -2,7 +2,7 @@ import click
 import sys
 import boto3
 import datetime
-import creds.credential as cred
+from creds import cred
 
 @click.command()
 @click.option("--profile-name", 
@@ -106,9 +106,9 @@ def rm():
         echo_credentials(my_credentials)
         selection = click.prompt("Which profile would you like to delete", type=int, prompt_suffix="? ") - 1
         click.echo(" ")
-        confirmation = click.prompt("'" + my_credentials[selection].name + "' has been selected for deletion. Are you sure", type=str, prompt_suffix="? ").lower()
+        confirmation = click.prompt("'" + my_credentials[selection].name + "' has been selected for deletion. Are you sure (y/n)", type=str, prompt_suffix="? ").lower()
 
-        if confirmation == "y":
+        if confirmation == "y" or confirmation == "yes":
             my_credentials[selection].remove()
             click.echo("Profile deleted successfully.")
         else:
@@ -155,8 +155,27 @@ def status():
 
 @click.command()    
 def update():
-    """NYI: Not Yet Implemented."""
-    click.echo("Not yet implemented, try again later.")
+    """Updates the selected profile with the new values."""
+    click.echo(" ")
+    my_credentials = cred.Credential.get_all()
+    echo_credentials(my_credentials)
+    selection = click.prompt("Which profile would you like to update", type=int, prompt_suffix="? ") - 1
+    my_credential = my_credentials[selection]
+
+    click.echo("If you have no new value, just press enter.")
+    click.echo(" ")
+
+    my_credential.name = click.prompt("New Name", default=my_credential.name, show_default=True, type=str)
+    my_credential.description = click.prompt("New Description", default=my_credential.description, show_default=True, type=str)
+    my_credential.access_key = click.prompt("New Access Key", default=my_credential.access_key, show_default=True, type=str)
+    my_credential.secret_key = click.prompt("New Secret Key [*****]", default=my_credential.secret_key, show_default=False, type=str, hide_input=True)
+    my_credential.region = click.prompt("New Region", default=my_credential.region, show_default=True, type=str)
+    my_credential.output = click.prompt("New Output Type", default=my_credential.output, show_default=True, type=str)
+
+    click.echo(" ")
+    my_credential.save()
+    click.echo("Profile saved successfully.")
+    click.echo(" ")
 
 def get_account_details():
     sts = boto3.client("sts")
@@ -223,5 +242,3 @@ def check_credential_age():
         # util.log_error(str(err), "ui.login()")
         click.echo("Error connecting to your account.")
         click.echo("Please clear any AWS environment variables and try again.")
-
-    

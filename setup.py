@@ -17,20 +17,23 @@ setuptools.setup(
         "Development Status :: 4 - Beta",
         "Environment :: Console",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent"
+        "Operating System :: OS Independent",
+        "Natural Language :: English",
+        "Topic :: System :: Systems Administration"
     ],
     entry_points = {
         'console_scripts': [
-            'aws-creds=main.main:main'
+            'aws-creds=creds.main:main'
         ]
     },
     install_requires = [
         "boto3",
         "click"
     ],
-    py_modules= [
-        "ui.creds_ui",
-        "creds.credential"
+    py_modules = [
+        "creds.cli",
+        "creds.cred"
     ]
 )

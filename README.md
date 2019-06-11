@@ -22,15 +22,14 @@ Options:
   --version  Show the version and exit.
   --help     Show this message and exit.
 
-
 Commands:
-  add      Adds a new account profile to '~/.aws/accounts.json'.
-  login    Sets the user's AWS credentials to the selected profile.
-  logout   Deletes user's current AWS credentials.
-  ls       Lists all of the profiles currently saved in...
-  rm       NYI: Not Yet Implemented.
-  status   Prints out information about the credential that is currently in...
-  update   NYI: Not Yet Implemented.
+  add     Adds a new account profile to '~/.aws/accounts.json'.
+  login   Sets the user's AWS credentials to the selected profile.
+  logout  Deletes user's current AWS credentials.
+  ls      Lists all of the saved profiles.
+  rm      Deletes the selected profile.
+  status  Prints out information about the credential that is currently in...
+  update  Updates the selected profile with the new values.
 ```
 
 ## Commands
@@ -42,7 +41,8 @@ The following commands are available within the AWS Credential Picker.
 3. ```ls```: List all the saved credentials.
 4. ```login```: Login using a credential.
 5. ```logout```: Remove all of the files used by the aws-cli in ~/.aws.
-7. ```status```: Print details about the current session (account/user).
+6. ```status```: Print details about the current session (account/user).
+7. ```update```: Updates the selected profile with new values.
 
 ## Options
 

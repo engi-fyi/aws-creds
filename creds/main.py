@@ -12,6 +12,12 @@ def main():
     """
     pass
 
+@click.group()
+def default():
+    """
+        Used to set the defaults for output type and region.
+    """
+
 main.add_command(cli.add)
 main.add_command(cli.ls)
 main.add_command(cli.rm)
@@ -20,4 +26,7 @@ main.add_command(cli.logout)
 main.add_command(cli.status)
 main.add_command(cli.update)
 main.add_command(cli.rotate)
+default.add_command(cli.get_defaults)
+default.add_command(cli.set_defaults)
+main.add_command(default)
 cred.Credential.migrate()

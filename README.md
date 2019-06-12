@@ -23,14 +23,15 @@ Options:
   --help     Show this message and exit.
 
 Commands:
-  add     Adds a new credential profile.
-  login   Sets the user's AWS credentials to the selected profile.
-  logout  Deletes user's current AWS credentials.
-  ls      Lists all of the saved profiles.
-  rm      Deletes the selected profile.
-  rotate  Automatically rotates your access keys.
-  status  Prints out information about the credential that is currently in...
-  update  Updates the selected profile with the new values.
+  add      Adds a new credential profile.
+  default  Used to set the defaults for output type and region.
+  login    Sets the user's AWS credentials to the selected profile.
+  logout   Deletes user's current AWS credentials.
+  ls       Lists all of the saved profiles.
+  rm       Deletes the selected profile.
+  rotate   Automatically rotates your access keys.
+  status   Prints out information about the credential that is currently in...
+  update   Updates the selected profile with the new values.
 ```
 
 ## Commands
@@ -45,6 +46,9 @@ The following commands are available within the AWS Credential Picker.
 6. ```status```: Print details about the current session (account/user).
 7. ```update```: Updates the selected profile with new values.
 8. ```rotate```: Rotates your Access Key if you have a spare slot available.
+9. ```default```: Used to manage default region and output type.
+    1. ```get```: Prints out the default region and output type.
+    2. ```set```: Sets the default region and output type.
 
 ## Options
 

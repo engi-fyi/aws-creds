@@ -2,7 +2,7 @@ import click
 import sys
 import boto3
 import datetime
-from creds import cred, util
+from creds import cred, util, defaults
 
 @click.command()
 @click.option("--profile-name", 
@@ -20,13 +20,17 @@ from creds import cred, util
               prompt="Secret Key")
 @click.option("--region", 
               help="Default AWS Region (see https://docs.aws.amazon.com/general/latest/gr/rande.html#ec2_region).",
-              prompt="Default Region")
+              prompt="Default Region",
+              default=defaults.DefaultConfiguration().region,
+              show_default=True)
 @click.option("--output", 
               help="Default Output Format (valid options: text, json, table)",
-              prompt="Output Type")
+              prompt="Output Type",
+              default=defaults.DefaultConfiguration().output,
+              show_default=True)
 def add(profile_name, description, access_key, secret_key, region, output):
     """Adds a new credential profile."""
-    if profile_name and access_key and secret_key and region and output:
+    if profile_name and access_key and secret_key:
         my_credential = cred.Credential(profile_name, description, access_key, secret_key, region, output)
         my_credential.save()
         click.echo("New profile created successfully.")
@@ -205,6 +209,45 @@ def rotate():
     else:
         click.echo("Sorry, you're not logged in.")
     
+    click.echo(" ")
+
+@click.command(name="get")
+def get_defaults():
+    """
+    Prints out the current default region and output type for the awscli.
+    """
+    click.echo(" ")
+
+    default_config = defaults.DefaultConfiguration()
+    click.echo("Default Output: " + default_config.output)
+    click.echo("Default Region: " + default_config.region)
+
+    click.echo(" ")
+
+@click.command(name="set")
+@click.option("--output", default=None, help="The default output type (json, text, or table).")
+@click.option("--region", default=None, help="The default AWS region you want to use.")
+def set_defaults(output, region):
+    """
+    Allows you to set the default region and output type for the awscli.
+    """
+    click.echo(" ")
+
+    default_config = defaults.DefaultConfiguration()
+
+    if output:
+        default_config.output = output
+    else:
+        default_config.output = click.prompt("New Default Output", default=default_config.output, show_default=True, type=str)
+    
+    if region:
+        default_config.region = region
+    else:
+        default_config.region = click.prompt("New Default Region", default=default_config.region, show_default=True, type=str)
+
+    default_config.save()
+    click.echo("New defaults saved successfully.")
+
     click.echo(" ")
 
 def echo_credentials(my_credentials):

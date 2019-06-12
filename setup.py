@@ -5,16 +5,16 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="aws-creds",
-    version="0.10.0",
+    version="1.0.0",
     author="Adam Hammond",
     author_email="adam@hammo.io",
-    description="Switch between AWS Credential profiles.",
+    description="Easily switch between AWS Credential profiles.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/HammoTime/aws-creds",
     packages=setuptools.find_packages(),
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",

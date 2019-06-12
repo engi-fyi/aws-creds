@@ -6,7 +6,6 @@ import datetime
 class Credential():
     DEFAULT_CREDENTIAL_DIRECTORY = os.path.expanduser("~/.aws/credential_profiles/")
     OLD_ACCOUNTS_FILE_NAME = os.path.expanduser("~/.aws/accounts.json")
-    CONFIG_FILE_NAME = os.path.expanduser("~/.aws/credential_profiles/defaults/defaults.json")
     CURRENT_PROFILE_FILE_NAME = os.path.expanduser("~/.aws/.current_profile")
     AWS_CREDENTIAL_FILE_NAME = os.path.expanduser("~/.aws/credentials")
     AWS_CONFIG_FILE_NAME = os.path.expanduser("~/.aws/config")
@@ -162,7 +161,8 @@ class Credential():
         profiles = os.listdir(Credential.DEFAULT_CREDENTIAL_DIRECTORY)
 
         for profile in profiles:
-            all_credentials.append(Credential.from_json(profile))
+            if profile != "defaults":
+                all_credentials.append(Credential.from_json(profile))
 
         all_credentials.sort()
         return all_credentials

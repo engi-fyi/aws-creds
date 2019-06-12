@@ -6,6 +6,7 @@ import datetime
 class Credential():
     DEFAULT_CREDENTIAL_DIRECTORY = os.path.expanduser("~/.aws/credential_profiles/")
     OLD_ACCOUNTS_FILE_NAME = os.path.expanduser("~/.aws/accounts.json")
+    CONFIG_FILE_NAME = os.path.expanduser("~/.aws/credential_profiles/defaults/defaults.json")
     CURRENT_PROFILE_FILE_NAME = os.path.expanduser("~/.aws/.current_profile")
     AWS_CREDENTIAL_FILE_NAME = os.path.expanduser("~/.aws/credentials")
     AWS_CONFIG_FILE_NAME = os.path.expanduser("~/.aws/config")
@@ -165,6 +166,16 @@ class Credential():
 
         all_credentials.sort()
         return all_credentials
+
+    @staticmethod
+    def get_by_access_key(access_key):
+        all_credentials = Credential.get_all()
+
+        for credential in all_credentials:
+            if credential.access_key == access_key:
+                return credential
+        
+        raise(NoCredentialFoundForAccessKeyError(access_key))
     
     @staticmethod
     def logout():
@@ -194,3 +205,8 @@ class CredentialNotFoundError(Exception):
     def __init__(self, credential_id):
         self.credential_id = credential_id
         self.message = "The credential was not found in the DEFAULT_CREDENTIAL_DIRECTORY."
+
+class NoCredentialFoundForAccessKeyError(Exception):
+    def __init__(self, access_key):
+        self.access_key = access_key
+        self.message = "Sorry there is no saved profile for the current account. Have you saved it?"

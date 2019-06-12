@@ -23,11 +23,12 @@ Options:
   --help     Show this message and exit.
 
 Commands:
-  add     Adds a new account profile to '~/.aws/accounts.json'.
+  add     Adds a new credential profile.
   login   Sets the user's AWS credentials to the selected profile.
   logout  Deletes user's current AWS credentials.
   ls      Lists all of the saved profiles.
   rm      Deletes the selected profile.
+  rotate  Automatically rotates your access keys.
   status  Prints out information about the credential that is currently in...
   update  Updates the selected profile with the new values.
 ```
@@ -43,6 +44,7 @@ The following commands are available within the AWS Credential Picker.
 5. ```logout```: Remove all of the files used by the aws-cli in ~/.aws.
 6. ```status```: Print details about the current session (account/user).
 7. ```update```: Updates the selected profile with new values.
+8. ```rotate```: Rotates your Access Key if you have a spare slot available.
 
 ## Options
 

@@ -4,6 +4,7 @@ import boto3
 import datetime
 from creds import cred, util, defaults
 
+
 @click.command()
 @click.option("--profile-name", 
               help="Label given to the profile.",
@@ -37,6 +38,7 @@ def add(profile_name, description, access_key, secret_key, region, output):
     else:
         click.echo("Sorry, you didn't enter a value for all the options!")
 
+
 @click.command()
 def ls():
     """Lists all of the saved profiles."""
@@ -49,6 +51,7 @@ def ls():
     echo_credentials(my_credentials)
     click.echo("There are " + str(len(my_credentials)) + " active profiles.")
     click.echo(" ")
+
 
 @click.command()
 def login():
@@ -78,6 +81,7 @@ def login():
     check_credential_age()
     click.echo(" ")
 
+
 @click.command()
 def logout():
     """
@@ -99,6 +103,7 @@ def logout():
     cred.Credential.logout()
     click.echo("Logged out successfully.")
     click.echo(" ")
+
 
 @click.command()
 def rm():
@@ -123,6 +128,7 @@ def rm():
         click.echo(" ")
         click.echo("Exiting, no selection made.")
         click.echo(" ")
+
 
 @click.command()
 def status():
@@ -158,6 +164,7 @@ def status():
         click.echo("Not logged in.")
         click.echo(" ")
 
+
 @click.command()    
 def update():
     """Updates the selected profile with the new values."""
@@ -181,6 +188,7 @@ def update():
     my_credential.save()
     click.echo("Profile saved successfully.")
     click.echo(" ")
+
 
 @click.command()
 def rotate():
@@ -211,6 +219,7 @@ def rotate():
     
     click.echo(" ")
 
+
 @click.command(name="get")
 def get_defaults():
     """
@@ -223,6 +232,7 @@ def get_defaults():
     click.echo("Default Region: " + default_config.region)
 
     click.echo(" ")
+
 
 @click.command(name="set")
 @click.option("--output", default=None, help="The default output type (json, text, or table).")
@@ -250,6 +260,7 @@ def set_defaults(output, region):
 
     click.echo(" ")
 
+
 def echo_credentials(my_credentials):
     for i in range(0, len(my_credentials)):
         my_credential = my_credentials[i]
@@ -257,6 +268,7 @@ def echo_credentials(my_credentials):
         click.echo("[" + option_number + "] " + my_credential.name)
         click.echo("      " + my_credential.description)
         click.echo(" ")
+
 
 def check_credential_age():
     try:

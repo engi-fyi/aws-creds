@@ -3,6 +3,7 @@ import os
 import json
 import datetime
 
+
 class Credential():
     DEFAULT_CREDENTIAL_DIRECTORY = os.path.expanduser("~/.aws/credential_profiles/")
     OLD_ACCOUNTS_FILE_NAME = os.path.expanduser("~/.aws/accounts.json")
@@ -201,10 +202,12 @@ class Credential():
         else:
             return None
 
+
 class CredentialNotFoundError(Exception):
     def __init__(self, credential_id):
         self.credential_id = credential_id
         self.message = "The credential was not found in the DEFAULT_CREDENTIAL_DIRECTORY."
+
 
 class NoCredentialFoundForAccessKeyError(Exception):
     def __init__(self, access_key):

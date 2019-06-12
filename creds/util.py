@@ -3,11 +3,13 @@ import json
 import datetime
 from creds import cred
 
+
 def logged_in():
     if cred.Credential.get_current():
         return True
     else:
         return False
+
 
 def get_access_key_age():
     if logged_in():
@@ -32,6 +34,7 @@ def get_access_key_age():
     else:
         raise NotLoggedInError()
 
+
 def get_account_details():
     if logged_in():
         sts = boto3.client("sts")
@@ -51,6 +54,7 @@ def get_account_details():
         return details
     else:
         raise NotLoggedInError()
+
 
 def rotate_access_keys():
     if logged_in():
@@ -78,15 +82,13 @@ def rotate_access_keys():
     else:
         raise NotLoggedInError()
 
+
 class TooManyAccessKeysError(Exception):
     def __init__(self, access_keys):
         self.access_keys = access_keys
         self.message = "Sorry, you have too many access keys. I can only rotate when there is a free Access Key slot available."
 
+
 class NotLoggedInError(Exception):
     def __init__(self):
         self.message = "You're not logged in."
-
-if __name__ == "__main__":
-    rotate_access_keys()
-

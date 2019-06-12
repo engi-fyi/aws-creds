@@ -1,6 +1,7 @@
 import json
 import os
 
+
 class DefaultConfiguration():
     CONFIG_FILE_NAME = os.path.expanduser("~/.aws/credential_profiles/defaults/defaults.json")
     DEFAULT_DEFAULTS = {

@@ -3,6 +3,7 @@ import sys
 import click
 from creds import cli, cred
 
+
 @click.group()
 @click.version_option()
 def main():
@@ -12,11 +13,13 @@ def main():
     """
     pass
 
+
 @click.group()
 def default():
     """
         Used to set the defaults for output type and region.
     """
+
 
 main.add_command(cli.add)
 main.add_command(cli.ls)

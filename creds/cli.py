@@ -2,7 +2,7 @@ import click
 import sys
 import boto3
 import datetime
-from creds import cred
+from creds import cred, util
 
 @click.command()
 @click.option("--profile-name", 
@@ -139,8 +139,8 @@ def status():
     my_credential = cred.Credential.get_current()
 
     if my_credential:
-        access_key_age = str(get_access_key_age()) + " day(s)."
-        details = get_account_details()
+        access_key_age = str(util.get_access_key_age()) + " day(s)."
+        details = util.get_account_details()
         click.echo(" ")
         click.echo("Current Profile: " + my_credential.name)
         click.echo("Account Number:  " + details["account"])
@@ -178,22 +178,34 @@ def update():
     click.echo("Profile saved successfully.")
     click.echo(" ")
 
-def get_account_details():
-    sts = boto3.client("sts")
-    iam = boto3.client("iam")
-    session = boto3.Session()
-    id = sts.get_caller_identity()
-    details = { }
- 
-    details["account"] = id["Account"]
-    details["username"] = id["Arn"].split("/")[1]
+@click.command()
+def rotate():
+    """
+        Automatically rotates your access keys. It is recommended
+        you do not unless you only use your access key on a single workstation.
+    """
+    click.echo(" ")
 
-    # List account aliases through the pagination interface
-    paginator = iam.get_paginator("list_account_aliases")
-    for response in paginator.paginate():
-        details["aliases"] = response["AccountAliases"][0]
-
-    return details
+    if util.logged_in():
+        try:
+            current_credential = cred.Credential.get_current()
+            click.echo("Current Access Key is '" + current_credential.access_key + "'.")
+            click.echo("Rotating keys.")
+            credential = util.rotate_access_keys()
+            click.echo("Rotation successful.")
+            click.echo("New Access Key is '" + credential.access_key + "'.")
+        except util.NotLoggedInError as err:
+            click.echo(err.message)
+        except util.TooManyAccessKeysError as err:
+            click.echo(err.message)
+            click.echo("Access Key 1: " + err.access_keys[0])
+            click.echo("Access Key 1: " + err.access_keys[1])
+        except cred.NoCredentialFoundForAccessKeyError as err:
+            click.echo(err.message + " (" + err.access_key + ")")
+    else:
+        click.echo("Sorry, you're not logged in.")
+    
+    click.echo(" ")
 
 def echo_credentials(my_credentials):
     for i in range(0, len(my_credentials)):
@@ -203,29 +215,9 @@ def echo_credentials(my_credentials):
         click.echo("      " + my_credential.description)
         click.echo(" ")
 
-def get_access_key_age():
-    session = boto3.Session()
-    credentials = session.get_credentials()
-    access_key_id = credentials.access_key
-    iam = boto3.client('iam')
-    access_keys = iam.list_access_keys()
-    days_old = 0
-
-    for access_key_metadata in access_keys["AccessKeyMetadata"]:
-        if access_key_metadata["AccessKeyId"] == access_key_id:
-            create_date = access_key_metadata["CreateDate"].replace(tzinfo=None)
-            current_time = datetime.datetime.utcnow().replace(tzinfo=None)
-            time_string = str(current_time - create_date).split(",")[0]
-            try:
-                days_old = int(time_string.split(" ")[0])
-            except:
-                days_old = 0
-
-    return days_old
-
 def check_credential_age():
     try:
-        days_old = get_access_key_age()
+        days_old = util.get_access_key_age()
 
         if days_old == 1:
             time_string = "1 day"
@@ -241,5 +233,6 @@ def check_credential_age():
             click.echo('\033[91m' + "Please rotate it immediately (reason: older than 60 days)." '\033[0m')
     except Exception as err:
         # util.log_error(str(err), "ui.login()")
+        print(err)
         click.echo("Error connecting to your account.")
         click.echo("Please clear any AWS environment variables and try again.")

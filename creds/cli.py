@@ -71,6 +71,7 @@ def login():
        to be rotated.
     
     """
+    click.echo(" ")
     my_credentials = cred.Credential.get_all()
     echo_credentials(my_credentials)
     selection = click.prompt("Which profile would you like to login to", type=int, prompt_suffix="? ") - 1

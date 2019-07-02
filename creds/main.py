@@ -21,6 +21,13 @@ def default():
     """
 
 
+@click.group()
+def role():
+    """
+        Used to login using an assumed role.
+    """
+
+
 main.add_command(cli.add)
 main.add_command(cli.ls)
 main.add_command(cli.rm)
@@ -32,4 +39,10 @@ main.add_command(cli.rotate)
 default.add_command(cli.get_defaults)
 default.add_command(cli.set_defaults)
 main.add_command(default)
+role.add_command(cli.add_role)
+role.add_command(cli.assume_role)
+role.add_command(cli.unassume_role)
+role.add_command(cli.list_roles)
+role.add_command(cli.remove_role)
+main.add_command(role)
 cred.Credential.migrate()

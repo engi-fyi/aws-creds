@@ -4,11 +4,12 @@ import datetime
 import os
 from creds import cred
 
+
 AWS_CLI_ENVIRONMENT_VARIABLES = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY",
                                  "AWS_SESSION_TOKEN", "AWS_DEFAULT_REGION"
-                                 "AWS_DEFAULT_OUTPUT", "AWS_DEFAULT_PROFILE",
-                                 "AWS_CA_BUNDLE", "AWS_SHARED_CREDENTIALS_FILE",
-                                 "AWS_CONFIG_FILE"]
+                                 "AWS_DEFAULT_OUTPUT", "AWS_CA_BUNDLE", 
+                                 "AWS_SHARED_CREDENTIALS_FILE", "AWS_CONFIG_FILE"]
+
 
 def logged_in():
     if cred.Credential.get_current():
@@ -52,9 +53,12 @@ def get_account_details():
         details["username"] = id["Arn"].split("/")[1]
 
         # List account aliases through the pagination interface
-        paginator = iam.get_paginator("list_account_aliases")
-        for response in paginator.paginate():
-            details["aliases"] = response["AccountAliases"][0]
+        try:
+            paginator = iam.get_paginator("list_account_aliases")
+            for response in paginator.paginate():
+                details["aliases"] = response["AccountAliases"][0]
+        except:
+            details["aliases"] = "N/A"
 
         return details
     else:

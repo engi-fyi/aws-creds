@@ -10,8 +10,10 @@ class Credential():
     CURRENT_PROFILE_FILE_NAME = os.path.expanduser("~/.aws/.current_profile")
     AWS_CREDENTIAL_FILE_NAME = os.path.expanduser("~/.aws/credentials")
     AWS_CONFIG_FILE_NAME = os.path.expanduser("~/.aws/config")
+    CURRENT_ROLE_FILE_NAME = os.path.expanduser("~/.aws/.current_role")
 
-    def __init__(self, name, description, access_key, secret_key, region, output, id=str(uuid.uuid4()), create_date=str(datetime.datetime.utcnow().replace(tzinfo=None)), modified_date=None):
+
+    def __init__(self, name, description, access_key, secret_key, region, output, roles=[], id=str(uuid.uuid4()), create_date=str(datetime.datetime.utcnow().replace(tzinfo=None)), modified_date=None):
         self.id = id
         self.name = name.upper()
         self.description = description
@@ -19,11 +21,13 @@ class Credential():
         self.secret_key = secret_key
         self.region = region
         self.output = output
+        self.roles = roles
         self.create_date = create_date
         if not modified_date:
             self.modified_date = create_date
         else:
             self.modifed_date = modified_date
+
 
     def __lt__(self, other):
         if self.name < other.name:
@@ -31,11 +35,13 @@ class Credential():
         else:
             return False
 
+
     def __gt__(self, other):
         if self.name > other.name:
             return True
         else:
             return False
+
 
     def to_json(self):
         credential_dictionary = {
@@ -50,11 +56,13 @@ class Credential():
                 "Region": self.region,
                 "OutputType": self.output
             },
+            "Roles": self.roles,
             "CreateDate": self.create_date,
             "ModifiedDate": self.modifed_date
         }
 
         return json.dumps(credential_dictionary, indent=4)
+
 
     @staticmethod
     def from_json(id):
@@ -63,6 +71,10 @@ class Credential():
         if os.path.exists(credential_file_name):
             with open(credential_file_name, "r") as fh:
                 existing_credential = json.loads(fh.read())
+
+            # Added for backwards compatibility
+            if "Roles" not in existing_credential:
+                existing_credential["Roles"] = []
             
             credential = Credential(
                 existing_credential["Name"],
@@ -71,6 +83,7 @@ class Credential():
                 existing_credential["Credentials"]["SecretKey"],
                 existing_credential["Options"]["Region"],
                 existing_credential["Options"]["OutputType"],
+                existing_credential["Roles"],
                 existing_credential["Id"],
                 existing_credential["CreateDate"],
                 existing_credential["ModifiedDate"]
@@ -79,6 +92,7 @@ class Credential():
             return credential
         else:
             raise CredentialNotFoundError(id)
+
 
     def save(self):
         credential_file_name = self.get_credential_file_name()
@@ -89,30 +103,73 @@ class Credential():
         with open(credential_file_name, "w+") as fh:
             fh.write(serialized_self)
 
-    def login(self):
+
+    def create_credential_file(self):
         credential_file_contents = "[default]" + os.linesep
         credential_file_contents += "aws_access_key_id=" + self.access_key + os.linesep
         credential_file_contents += "aws_secret_access_key=" + self.secret_key
-
-        options_file_contents = "[default]" + os.linesep
-        options_file_contents += "region=" + self.region + os.linesep
-        options_file_contents += "output=" + self.output
-
-        current_profile_file_contents = self.id
 
         credential_file = open(Credential.AWS_CREDENTIAL_FILE_NAME, "w+")
         credential_file.write(credential_file_contents)
         credential_file.close()
 
-        current_profile_file = open(Credential.CURRENT_PROFILE_FILE_NAME, "w+")
-        current_profile_file.write(current_profile_file_contents)
-        current_profile_file.close()
 
+    def create_default_options_file(self):
+        options_file_contents = "[default]" + os.linesep
+        options_file_contents += "region=" + self.region + os.linesep
+        options_file_contents += "output=" + self.output
         options_file = open(Credential.AWS_CONFIG_FILE_NAME, "w+")
         options_file.write(options_file_contents)
         options_file.close()
 
+
+    def login(self):
+        self.create_credential_file()
+        self.create_default_options_file()
+        current_profile_file_contents = self.id
+        current_profile_file = open(Credential.CURRENT_PROFILE_FILE_NAME, "w+")
+        current_profile_file.write(current_profile_file_contents)
+        current_profile_file.close()
         return True
+    
+
+    def assume_role(self, role_arn):
+        self.create_default_options_file()
+
+        if role_arn not in self.roles:
+            raise RoleNotSavedInCurrentCredentialError(role_arn)
+
+        options_file_contents = os.linesep
+        options_file_contents += "role_arn=" + role_arn + os.linesep
+        options_file_contents += "source_profile=default"
+        options_file = open(Credential.AWS_CONFIG_FILE_NAME, "a")
+        options_file.write(options_file_contents)
+        options_file.close()
+
+        current_profile_file = open(Credential.CURRENT_ROLE_FILE_NAME, "w+")
+        current_profile_file.write(role_arn)
+        current_profile_file.close()
+
+        return True
+
+
+    def get_current_role(self):
+        if os.path.exists(Credential.CURRENT_ROLE_FILE_NAME):
+            with open(Credential.CURRENT_ROLE_FILE_NAME, "r") as fh:
+                current_role_arn = fh.read()
+
+            if current_role_arn in self.roles:
+                return current_role_arn
+            else:
+                self.unassume_role()
+        else:
+            return None 
+
+
+    def unassume_role(self):
+        self.create_default_options_file()
+        os.remove(Credential.CURRENT_ROLE_FILE_NAME)
+
 
     def remove(self):
         os.remove(self.get_credential_file_name())
@@ -128,11 +185,13 @@ class Credential():
 
         return True
 
+
     def get_directory(self):
         return Credential.DEFAULT_CREDENTIAL_DIRECTORY + self.id
 
     def get_credential_file_name(self):
         return self.get_directory() + "/credential.json"
+
 
     @staticmethod
     def migrate():
@@ -156,6 +215,7 @@ class Credential():
                 )
                 new_profile.save()
 
+
     @staticmethod
     def get_all():
         all_credentials = []
@@ -168,6 +228,7 @@ class Credential():
         all_credentials.sort()
         return all_credentials
 
+
     @staticmethod
     def get_by_access_key(access_key):
         all_credentials = Credential.get_all()
@@ -178,6 +239,7 @@ class Credential():
         
         raise(NoCredentialFoundForAccessKeyError(access_key))
     
+
     @staticmethod
     def logout():
         if os.path.exists(Credential.CURRENT_PROFILE_FILE_NAME):
@@ -191,6 +253,7 @@ class Credential():
 
         return True
     
+
     @staticmethod
     def get_current():
         if os.path.exists(Credential.CURRENT_PROFILE_FILE_NAME):
@@ -213,3 +276,9 @@ class NoCredentialFoundForAccessKeyError(Exception):
     def __init__(self, access_key):
         self.access_key = access_key
         self.message = "Sorry there is no saved profile for the current account. Have you saved it?"
+
+
+class RoleNotSavedInCurrentCredentialError(Exception):
+    def __init__(self, role_arn):
+        self.role_arn = role_arn
+        self.message = "Sorry, you can only assume roles that have been saved into the current credential."

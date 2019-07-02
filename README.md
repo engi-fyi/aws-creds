@@ -29,6 +29,7 @@ Commands:
   logout   Deletes user's current AWS credentials.
   ls       Lists all of the saved profiles.
   rm       Deletes the selected profile.
+  role     Used to login using an assumed role.
   rotate   Automatically rotates your access keys.
   status   Prints out information about the credential that is currently in...
   update   Updates the selected profile with the new values.
@@ -49,6 +50,12 @@ The following commands are available within the AWS Credential Picker.
 9. ```default```: Used to manage default region and output type.
     1. ```get```: Prints out the default region and output type.
     2. ```set```: Sets the default region and output type.
+10. ```role```: Used to manage roles that can be assumed from the cli.
+    1. ```add```: Adds a role.
+    2. ```assume```: Assumes a saved role.
+    3. ```ls```: Lists all roles available to be assumed.
+    4. ```rm```: Removes an assumed role permanently from aws-cred config.
+    5. ```unassume```: Unassumes a role, switching back to source account.
 
 ## Options
 

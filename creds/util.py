@@ -1,8 +1,14 @@
 import boto3
 import json
 import datetime
+import os
 from creds import cred
 
+AWS_CLI_ENVIRONMENT_VARIABLES = ["AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY",
+                                 "AWS_SESSION_TOKEN", "AWS_DEFAULT_REGION"
+                                 "AWS_DEFAULT_OUTPUT", "AWS_DEFAULT_PROFILE",
+                                 "AWS_CA_BUNDLE", "AWS_SHARED_CREDENTIALS_FILE",
+                                 "AWS_CONFIG_FILE"]
 
 def logged_in():
     if cred.Credential.get_current():
@@ -39,7 +45,6 @@ def get_account_details():
     if logged_in():
         sts = boto3.client("sts")
         iam = boto3.client("iam")
-        session = boto3.Session()
         id = sts.get_caller_identity()
         details = { }
     
@@ -82,6 +87,23 @@ def rotate_access_keys():
     else:
         raise NotLoggedInError()
 
+
+def check_environment():
+    current_environment_variables = os.environ.keys()
+    disallowed_environment_variables = []
+
+    for cev in current_environment_variables:
+        if cev in AWS_CLI_ENVIRONMENT_VARIABLES:
+            disallowed_environment_variables.append(cev)
+    
+    if len(disallowed_environment_variables) > 0:
+        raise EnvironmentVariableIsSetError(disallowed_environment_variables)
+
+
+class EnvironmentVariableIsSetError(Exception):
+    def __init__(self, variable_names):
+        self.variable_names = variable_names
+        self.message = "Sorry, aws-creds doesn't run correctly when there are environment variables set, please remove them."
 
 class TooManyAccessKeysError(Exception):
     def __init__(self, access_keys):

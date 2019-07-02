@@ -108,3 +108,6 @@ venv.bak/
 
 # my build process
 .installed_files
+
+# VS Code
+.vscode

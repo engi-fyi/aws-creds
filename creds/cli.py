@@ -72,15 +72,33 @@ def login():
     
     """
     click.echo(" ")
-    my_credentials = cred.Credential.get_all()
-    echo_credentials(my_credentials)
-    selection = click.prompt("Which profile would you like to login to", type=int, prompt_suffix="? ") - 1
-    click.echo(" ")
-    my_credential = my_credentials[selection]
-    my_credential.login()
-    click.echo("Successfully logged into '" + my_credential.name + "'.")
-    check_credential_age()
-    click.echo(" ")
+    
+    try:
+        util.check_environment()
+        my_credentials = cred.Credential.get_all()
+        echo_credentials(my_credentials)
+        selection = click.prompt("Which profile would you like to login to", type=int, prompt_suffix="? ") - 1
+        click.echo(" ")
+        my_credential = my_credentials[selection]
+        my_credential.login()
+        click.echo("Successfully logged into '" + my_credential.name + "'.")
+        check_credential_age()
+        click.echo(" ")
+    except util.EnvironmentVariableIsSetError as err:
+        click.echo("Sorry, there are environment variables set.")
+        click.echo(" ")
+        
+        for v in err.variable_names:
+            click.echo(" - " + v)
+        
+        click.echo(" ")
+        click.echo("Please delete the environment variables and try again.")
+        click.echo(" ")
+    except click.Abort:
+        click.echo(" ")
+        click.echo(" ")
+        click.echo("Exiting, no selection made.")
+        click.echo(" ")
 
 
 @click.command()
@@ -124,7 +142,7 @@ def rm():
             click.echo("Deletion not confirmed, not continuing.")
         
         click.echo(" ")
-    except click.Abort as interrupt:
+    except click.Abort:
         click.echo(" ")
         click.echo(" ")
         click.echo("Exiting, no selection made.")
@@ -172,23 +190,29 @@ def update():
     click.echo(" ")
     my_credentials = cred.Credential.get_all()
     echo_credentials(my_credentials)
-    selection = click.prompt("Which profile would you like to update", type=int, prompt_suffix="? ") - 1
-    my_credential = my_credentials[selection]
+    try:
+        selection = click.prompt("Which profile would you like to update", type=int, prompt_suffix="? ") - 1
+        my_credential = my_credentials[selection]
 
-    click.echo("If you have no new value, just press enter.")
-    click.echo(" ")
+        click.echo("If you have no new value, just press enter.")
+        click.echo(" ")
 
-    my_credential.name = click.prompt("New Name", default=my_credential.name, show_default=True, type=str)
-    my_credential.description = click.prompt("New Description", default=my_credential.description, show_default=True, type=str)
-    my_credential.access_key = click.prompt("New Access Key", default=my_credential.access_key, show_default=True, type=str)
-    my_credential.secret_key = click.prompt("New Secret Key [*****]", default=my_credential.secret_key, show_default=False, type=str, hide_input=True)
-    my_credential.region = click.prompt("New Region", default=my_credential.region, show_default=True, type=str)
-    my_credential.output = click.prompt("New Output Type", default=my_credential.output, show_default=True, type=str)
+        my_credential.name = click.prompt("New Name", default=my_credential.name, show_default=True, type=str)
+        my_credential.description = click.prompt("New Description", default=my_credential.description, show_default=True, type=str)
+        my_credential.access_key = click.prompt("New Access Key", default=my_credential.access_key, show_default=True, type=str)
+        my_credential.secret_key = click.prompt("New Secret Key [*****]", default=my_credential.secret_key, show_default=False, type=str, hide_input=True)
+        my_credential.region = click.prompt("New Region", default=my_credential.region, show_default=True, type=str)
+        my_credential.output = click.prompt("New Output Type", default=my_credential.output, show_default=True, type=str)
 
-    click.echo(" ")
-    my_credential.save()
-    click.echo("Profile saved successfully.")
-    click.echo(" ")
+        click.echo(" ")
+        my_credential.save()
+        click.echo("Profile saved successfully.")
+        click.echo(" ")
+    except click.Abort:
+        click.echo(" ")
+        click.echo(" ")
+        click.echo("Exiting, no selection made.")
+        click.echo(" ")
 
 
 @click.command()
@@ -246,20 +270,26 @@ def set_defaults(output, region):
 
     default_config = defaults.DefaultConfiguration()
 
-    if output:
-        default_config.output = output
-    else:
-        default_config.output = click.prompt("New Default Output", default=default_config.output, show_default=True, type=str)
-    
-    if region:
-        default_config.region = region
-    else:
-        default_config.region = click.prompt("New Default Region", default=default_config.region, show_default=True, type=str)
+    try:
+        if output:
+            default_config.output = output
+        else:
+            default_config.output = click.prompt("New Default Output", default=default_config.output, show_default=True, type=str)
+        
+        if region:
+            default_config.region = region
+        else:
+            default_config.region = click.prompt("New Default Region", default=default_config.region, show_default=True, type=str)
 
-    default_config.save()
-    click.echo("New defaults saved successfully.")
+        default_config.save()
+        click.echo("New defaults saved successfully.")
 
-    click.echo(" ")
+        click.echo(" ")
+    except click.Abort:
+        click.echo(" ")
+        click.echo(" ")
+        click.echo("Exiting, no selection made or empty input.")
+        click.echo(" ")
 
 
 def echo_credentials(my_credentials):
